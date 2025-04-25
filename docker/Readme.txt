@@ -17,3 +17,8 @@ docker-compose -f docker/docker-compose.yaml up -d
 
 Windows用
 docker-compose -f docker/docker-compose.gpu.yaml up -d
+
+
+※dockerfile関連の変更後は
+docker-compose -f docker/docker-compose.yaml up --build -d
+docker-compose -f docker/docker-compose.gpu.yaml up --build -d
