@@ -8,4 +8,4 @@ __pycache__/
 .pytest_cache/
 
 # ---------------- 環境ファイル ----------------
-.env
+docker/.env  
