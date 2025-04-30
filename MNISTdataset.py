@@ -1,10 +1,15 @@
 """
 MNISTのダウンロード関係のファイル
 新規マシンではコンテナ内で以下のコマンドを実行
-
 python -c "from MNISTdataset import MnistDataset; MnistDataset('/workspace/data', download=True)"
-
 2回目位以降は不要.
+
+追記) MNISTのデータセットは軽かったからリポジトリ直下に追加した
+呼び出し時は以下のコマンド
+from MNISTdataset import MnistDataset          # ← ファイル名に合わせて
+
+root = "/workspace/MNIST"                      # ★ここだけ変更
+train_ds = MnistDataset(root, train=True)
 
 """
 

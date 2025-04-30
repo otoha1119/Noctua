@@ -17,7 +17,8 @@ services:
 
     volumes:
       - ../:/workspace                  # NOCTUA 全体を /workspace にマウント
-      - ${DATASET_PATH}:/workspace/data # データセットを /workspace/data にマウント
+      #- ${DATASET_PATH}:/workspace/data # データセットを /workspace/data にマウント
+      - ${DATASET_PATH}/Lung_dataset_original:/workspace/data/Lung_dataset_original
 
     working_dir: /workspace
     command: bash -c "jupyter notebook --allow-root --ip=0.0.0.0 --port=50000"

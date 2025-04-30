@@ -1,4 +1,5 @@
-/data/
+data/Lung_dataset_original/ 
+
 # Python バイトコード
 __pycache__/
 *.py[cod]
@@ -8,4 +9,4 @@ __pycache__/
 .pytest_cache/
 
 # ---------------- 環境ファイル ----------------
-docker/.env  
+# docker/.env
