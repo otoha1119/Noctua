@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import sys
+sys.path.append('/workspace')
+
 import os
 import pickle
 import numpy as np
