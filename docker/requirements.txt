@@ -27,3 +27,5 @@ opencv-python
 pillow
 ipython
 pylibjpeg
+
+tensorboard>=2.12.0
