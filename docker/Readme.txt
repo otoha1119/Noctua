@@ -22,18 +22,3 @@ docker-compose -f docker/docker-compose.gpu.yaml up -d
 ※dockerfile関連の変更後は
 docker-compose -f docker/docker-compose.yaml up --build -d
 docker-compose -f docker/docker-compose.gpu.yaml up --build -d
-
-Tensorboard関連
-
-TensorBoard を起動
-コンテナ内で以下のコマンドを実行します。
-tensorboard --logdir=runs --host=0.0.0.0 --port=6006
-
-ブラウザで確認
-ホストマシンのブラウザで以下の URL にアクセスします。
-http://<コンテナのIPアドレス>:6006
-
-コンテナの IP アドレスは以下のコマンドで確認できます。
-docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' Noctua
-
-
