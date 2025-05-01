@@ -1,4 +1,4 @@
-### Comit Message Template
+### 卒業研究のプロジェクト
 
 fix：バグ修正<br>
 hotfix：クリティカルなバグ修正<br>
