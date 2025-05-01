@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import sys
+sys.path.append('/workspace')
+
 import os
 import pickle
 import numpy as np
@@ -13,11 +16,13 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 import random
 import pandas as pd  # 追加: pandas をインポート
+from torch.utils.tensorboard import SummaryWriter  # TensorBoard をインポート
 
 from dataloader import DICOMDataset
 from Encoder import VitEncoder
 from Decoder import Decoder
 from ViTInputlayer import VitInputLayer
+from MNISTdataset import mnist_anomaly_loader
 # from AnoViT2D import AnoViT2D  # AnoViT2Dクラスを別ファイルに分割している場合
 
 class AnoViT2D(nn.Module):
@@ -49,44 +54,23 @@ def set_seed(seed=42):
 ####################################################
 # データセットとデータローダーを準備する関数
 ####################################################
-def prepare_dataloaders(data_dir, batch_size=1, num_workers=1):
+def prepare_dataloaders(data_dir, batch_size=128, num_workers=1):
     """
-    データセットとデータローダーを準備する。
-
-    Parameters:
-    -----------
-    data_dir : str
-        データが格納されたディレクトリのパス。
-    batch_size : int
-        バッチサイズ。
-    num_workers : int
-        DataLoaderのワーカー数。
-
-    Returns:
-    --------
-    dataloaders : dict
-        'train' と 'val' の DataLoader を含む辞書。
-    dataset_sizes : dict
-        'train' と 'val' のデータセットのサイズを含む辞書。
+    MNISTデータセットを正常データ（1）と異常データ（7）に分割し、
+    train/val/test 用の DataLoader を準備する。
     """
-    data_transforms = {
-        'train': None,  # 必要に応じてトランスフォームを追加
-        'val': None
-    }
-
-    image_datasets = {
-        'train': DICOMDataset(root_dir=os.path.join(data_dir, 'train'), transform=data_transforms['train']),
-        'val': DICOMDataset(root_dir=os.path.join(data_dir, 'val'), transform=data_transforms['val'])
-    }
-
-    dataloaders = {
-        'train': DataLoader(image_datasets['train'], batch_size=batch_size, shuffle=True, num_workers=num_workers),
-        'val': DataLoader(image_datasets['val'], batch_size=batch_size, shuffle=False, num_workers=num_workers)
-    }
-
-    dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
-
-    return dataloaders, dataset_sizes
+    loaders = mnist_anomaly_loader(
+        root=data_dir,
+        normal_digit=1,
+        abnormal_digit=7,
+        train_ratio=0.7,
+        val_ratio=0.2,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=num_workers,
+        download=True,
+    )
+    return loaders, {key: len(loader.dataset) for key, loader in loaders.items()}
 
 ####################################################
 # 損失関数の定義
@@ -303,8 +287,8 @@ def train_model(
     best_epoch = -1
     history = {'train_loss': [], 'val_loss': []}
 
-    # カラーマップを一度だけ初期化
-    colormap = plt.get_cmap('jet')
+    # TensorBoard の初期化
+    writer = SummaryWriter(log_dir='runs/AnoViT')
 
     for epoch in range(num_epochs):
         print(f'Epoch {epoch+1}/{num_epochs}')
@@ -426,6 +410,12 @@ def train_model(
                 # スコア分布のプロット
                 plot_score_distribution(all_labels, all_scores, save_dir=roc_dir, epoch=epoch)
 
+                # TensorBoard に損失と評価指標を記録
+                writer.add_scalar('Loss/Train', history['train_loss'][-1], epoch)
+                writer.add_scalar('Loss/Validation', history['val_loss'][-1], epoch)
+                writer.add_scalar('Metrics/ROC-AUC', roc_auc, epoch)
+                writer.add_scalar('Metrics/Accuracy', accuracy, epoch)
+
                 # 早期終了のチェック
                 if epoch_loss < best_val_loss:
                     best_val_loss = epoch_loss
@@ -439,11 +429,13 @@ def train_model(
                     print(f'No improvement in validation loss for {patience_counter} epoch(s).')
                     if patience_counter >= patience:
                         print('Early stopping triggered.')
+                        writer.close()
                         return model, history, best_epoch
 
         print('-----------------------------------------------------')
     
     print('Training completed without early stopping.')
+    writer.close()
     return model, history, best_epoch
 
 ####################################################
@@ -471,7 +463,7 @@ def main():
 
     # ======== データセットとデータローダーの準備 ========
     data_dir = r'D:\workspace_torch\data\Dataset_800_60_100'
-    dataloaders, dataset_sizes = prepare_dataloaders(data_dir, batch_size=1, num_workers=1)
+    dataloaders, dataset_sizes = prepare_dataloaders(data_dir, batch_size=128, num_workers=1)
     print(f'[Info] Loaded train and validation datasets: {dataset_sizes}')
 
     # ======== モデルとオプティマイザーの準備 ========
