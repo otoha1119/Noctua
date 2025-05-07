@@ -22,7 +22,7 @@ from dataloader import DICOMDataset
 from Encoder import VitEncoder
 from Decoder import Decoder
 from ViTInputlayer import VitInputLayer
-from MNISTdataset import mnist_anomaly_loader
+from PythonScript.MNISTdataset import mnist_anomaly_loader
 # from AnoViT2D import AnoViT2D  # AnoViT2Dクラスを別ファイルに分割している場合
 
 class AnoViT2D(nn.Module):
