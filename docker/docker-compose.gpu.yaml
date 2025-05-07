@@ -20,7 +20,7 @@ services:
 
     volumes:
       - ../:/workspace
-      - ${DATASET_PATH}:/workspace
+      - ${DATASET_PATH}:/workspace/DataSet
 
     working_dir: /workspace
     command: bash -c "jupyter notebook --allow-root --ip=0.0.0.0 --port=50000"
