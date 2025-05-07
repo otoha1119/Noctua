@@ -10,7 +10,7 @@ __pycache__/
 
 runs/
 
-DatasetMNIST/MNIST_PNG
+#DatasetMNIST/MNIST_PNG
 
 
 # ---------------- 環境ファイル ----------------
