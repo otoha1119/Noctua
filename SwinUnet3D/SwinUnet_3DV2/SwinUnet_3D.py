@@ -524,5 +524,12 @@ class SwinUnet3D(nn.Module):
 
 
 # 原始论文中 layers=[2,2,6,2]
-def swinUnet_t_3D(hidden_dim=96, layers=(2, 2, 4, 2), heads=(3, 6, 9, 12), num_classes: int = 2, **kwargs):
+
+def swinUnet_t_3D(
+    hidden_dim=96,
+    layers=(2, 2, 6, 2),        # Tiny‐Baseのステージ構成
+    heads=(3, 6, 12, 24),       # Tiny‐Baseのヘッド数
+    num_classes: int = 2,
+    **kwargs
+):
     return SwinUnet3D(hidden_dim=hidden_dim, layers=layers, heads=heads, num_classes=num_classes, **kwargs)

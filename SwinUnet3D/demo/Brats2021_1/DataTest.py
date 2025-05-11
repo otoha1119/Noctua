@@ -27,6 +27,7 @@ from monai.networks.utils import one_hot
 from monai.inferers import sliding_window_inference
 from monai.utils import set_determinism
 
+
 pl.seed_everything(42)
 set_determinism(42)
 

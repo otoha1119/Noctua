@@ -54,41 +54,50 @@ from SwinUnet_3DV2 import swinUnet_t_3D
 from SwinUnet_3DV2 import swinUnet_p_3D as SwinPureUnet3D
 from OthersModel.TransBTS.TransBTS_downsample8x_skipconnection import TransBTS, BTS
 
-
+#nnU-Net 方式で「各ダウンサンプリングレベルごとの kernel サイズ」と「stride（ダウンサンプリング倍率）」を自動計算
 def get_nnunet_k_s(final_shape, spacings):  #
     sizes, spacings = final_shape, spacings
     input_size = sizes
     strides, kernels = [], []
     while True:
+        # ① 各軸ごとの spacing 比を計算
         spacing_ratio = [sp / min(spacings) for sp in spacings]
+        # ② stride は「ratio ≤ 2 かつ size ≥ 8 なら 2、そうでなければ 1」
         stride = [
             2 if ratio <= 2 and size >= 8 else 1
             for (ratio, size) in zip(spacing_ratio, sizes)
         ]
+        # ③ kernel は「ratio ≤ 2 → 3、ratio > 2 → 1」
         kernel = [3 if ratio <= 2 else 1 for ratio in spacing_ratio]
+        # ④ すべての stride が 1 ならループ終了
         if all(s == 1 for s in stride):
             break
+        # ⑤ サイズが stride で割り切れない場合はエラー
         for idx, (i, j) in enumerate(zip(sizes, stride)):
             if i % j != 0:
                 raise ValueError(
                     f"Patch size is not supported, please try to modify the size {input_size[idx]} in the spatial dimension {idx}."
                 )
+        # ⑥ sizes と spacings を更新（ダウンサンプリング／アップサンプリング）
         sizes = [i / j for i, j in zip(sizes, stride)]
         spacings = [i * j for i, j in zip(spacings, stride)]
+        # ⑦ このレベルの kernel と stride を記録
         kernels.append(kernel)
         strides.append(stride)
-
+    # ⑧ 最初（ダウンサンプリングなし）の stride=[1,…] を先頭に追加
     strides.insert(0, len(spacings) * [1])
+    # ⑨ 最後（最も細かいレベル）の kernel=[3,…] を追加
     kernels.append(len(spacings) * [3])
+    # ⑩ 各レベルの kernel と stride をリストにまとめて返す
     return kernels, strides
 
 
 class Config(object):
-    # seed = 42  # 设置随机数种子
-    seed = 3407  # 设置随机数种子
+    # seed = 42  # 乱数シードの作成
+    seed = 3407  # 乱数シードの作成
     spacings = [1.0, 1.0, 1.0]
     # RoiSize = [256 // spacings[0], 256 // spacings[1], 160 // spacings[2]]
-    RoiSize = [128, 128, 128]  # SwinBTS和SwinUnetR需要hwd三个方向上的大小一致，其余的模型不需要
+    RoiSize = [128, 128, 128]  # SwinBTS や SwinUnetR は 3軸とも等しいサイズである必要があるため、それに合わせて [128, 128, 128]
     window_size = [it // 32 for it in RoiSize]  # 针对siwnUnet3D而言的窗口大小,FinalShape[i]能被window_size[i]数整除
 
     # 滑动窗口推理时使用
@@ -154,7 +163,9 @@ class Config(object):
                                  'channels': (32, 64, 128, 256, 512), 'strides': (2, 2, 2, 2)}
 
     ModelDict['SwinUnet3D'] = swinUnet_t_3D
+    
     ArgsDict['SwinUnet3D'] = {'in_channel': in_channels, 'num_classes': n_classes, 'window_size': window_size}
+
 
     ModelDict['SwinPureUnet3D'] = SwinPureUnet3D
     ArgsDict['SwinPureUnet3D'] = {'in_channel': in_channels, 'num_classes': n_classes, 'window_size': window_size}
@@ -162,6 +173,8 @@ class Config(object):
     # NeedTrain = False
     NeedTrain = True
     SaveTrainPred = True
+
+    #Pathの設定
     data_path = r'D:\Caiyimin\Dataset\Brats2021'
     TrainPath = os.path.join(data_path, 'Brats2021Train')
     ValidSegDir = os.path.join(data_path, 'ValidSeg', model_name)
