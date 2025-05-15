@@ -1,15 +1,13 @@
 # SwinUnet3D
-demo中最后一个字母为1的表示可以正常使用，为0的表示图像没有预处理好，效果很差，dice系数小于0.001 ，所有训练脚本都放在了demo文件夹中。
+デモの最後の文字が1であれば普通に使用でき、0であれば画像の前処理が不十分で、効果が非常に悪く、サイコロ係数が0.001以下であることを意味します。
 
-下载好对应的数据集之后，记得去Config类中把下图中的data_path、TrainPath和PredDataDir改成自己的路径即可完成训练，模型预测结果存放在PredDataDir中，先将预测集用iTK-SNAP或者3Dslicer打开，再将PredDataDir中对应的预测结果拖进去 ，即可三维可视化分割结果
-![img.png](img.png)
+対応するデータセットをダウンロードした後、忘れずにConfigクラスで下図のdata_path、TrainPath、PredDataDirを自分のパスに変更してトレーニングを完了します。モデルの予測結果はPredDataDirに保存され、予測セットはiTK-SNAPまたは3Dslicerで開かれ、PredDataDirの対応するデータはiTK-SNAPまたは3Dslicerで開かれます。 iTK-SNAPまたは3Dslicerで予測セットを開き、PredDataDirの対応する予測結果をそこにドラッグして、セグメンテーション結果を3Dで視覚化します。
+! [img.png](img.png)
 
-训练主函数位置：
-![image](https://github.com/1152545264/SwinUnet3D/assets/44309924/701a2631-7561-4d86-a4fa-9bdec941318a)
-其他的demo相同
+マスター関数の位置をトレーニングします：
+! [image](https://github.com/1152545264/SwinUnet3D/assets/44309924/701a2631-7561-4d86-a4fa-9bdec941318a)
+他のデモも同じ
 
-版本问题：V1只是单纯的使用transformer实现的，V2才是论文中的主版本，混合了transformer和卷积
+バージョン問題: V1は単純に変換器を使って実装されたもの、V2は変換器と畳み込みを混ぜた論文でのメインバージョン
 
-如果我们的工作对您有用，请引用对应的论文：https://bmcmedinformdecismak.biomedcentral.com/articles/10.1186/s12911-023-02129-z
-        
-        
+もし私たちの研究があなたの役に立つなら、対応する論文を引用してください: https://bmcmedinformdecismak.biomedcentral.com/articles/10.1186/s12911-023-02129-z
