@@ -5,9 +5,9 @@ from torchvision import transforms
 import os
 from tqdm import tqdm
 from sklearn.metrics import roc_curve, auc, accuracy_score, confusion_matrix
-from dataloader import DICOMDataset
-from Encoder import VitEncoder
-from Decoder import Decoder
+from Odataloader import DICOMDataset
+from OEncoder import VitEncoder
+from ODecoder import Decoder
 from statistics import mean
 def load_model(encoder_path, decoder_path, device):
     encoder = VitEncoder().to(device)

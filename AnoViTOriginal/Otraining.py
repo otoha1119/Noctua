@@ -14,10 +14,10 @@ from tqdm import tqdm
 import random
 import pandas as pd  # 追加: pandas をインポート
 
-from dataloader import DICOMDataset
-from Encoder import VitEncoder
-from Decoder import Decoder
-from ViTInputlayer import VitInputLayer
+from Odataloader import DICOMDataset
+from OEncoder import VitEncoder
+from ODecoder import Decoder
+from OViTInputlayer import VitInputLayer
 # from AnoViT2D import AnoViT2D  # AnoViT2Dクラスを別ファイルに分割している場合
 
 class AnoViT2D(nn.Module):

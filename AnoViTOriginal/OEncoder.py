@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from MHSA import MultiHeadSelfAttention
-from ViTInputlayer import VitInputLayer
+from OMHSA import MultiHeadSelfAttention
+from OViTInputlayer import VitInputLayer
 
 numpatch=16
 embdim=384
